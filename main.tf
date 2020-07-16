@@ -38,6 +38,7 @@ resource "aviatrix_vpc" "azure_spoke_vnet" {
 }
 
 # Aviatrix Azure Spoke Gateways
+# Added HA GWs on Jul 16
 resource "aviatrix_spoke_gateway" "azure_spoke_gw" {
   for_each           = var.azure_spoke_params
   cloud_type         = 8
@@ -46,7 +47,9 @@ resource "aviatrix_spoke_gateway" "azure_spoke_gw" {
   vpc_id             = aviatrix_vpc.azure_spoke_vnet[each.key].vpc_id
   vpc_reg            = each.value.azure_spoke_region
   gw_size            = var.azure_gw_size
+  ha_gw_size         = var.azure_gw_size
   subnet             = aviatrix_vpc.azure_spoke_vnet[each.key].subnets[0].cidr
+  ha_subnet          = aviatrix_vpc.azure_spoke_vnet[each.key].subnets[2].cidr
   enable_active_mesh = true
   transit_gw         = aviatrix_transit_gateway.ew_transit_firenet_gw.gw_name
   depends_on         = [aviatrix_transit_gateway.ew_transit_firenet_gw]
